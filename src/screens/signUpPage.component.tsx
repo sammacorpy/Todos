@@ -44,6 +44,7 @@ const SignUpPage = () => {
             },
             {
               name: "confirm password",
+              type: "password",
               option: { required: "* confirm password required" },
             },
           ]}

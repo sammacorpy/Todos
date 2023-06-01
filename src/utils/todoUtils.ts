@@ -37,6 +37,15 @@ export const filterTodosByStatus = (todos: Todo[]): { [key: string]: Todo[] } =>
   return todosByStatus;
 };
 
+export const filterMostPrioritizedTodo = (todos: Todo[]): Todo => {
+  const highestPriorityTodos = todos.filter(todo => todo.priority === "High" && todo.status==="Todo");
+  const mediumPriorityTodos = todos.filter(todo => todo.priority === "Medium" && todo.status==="Todo");
+  const lowPriorityTodos = todos.filter(todo => todo.priority === "Low" && todo.status==="Todo");
+  const filterTodo = highestPriorityTodos.concat(mediumPriorityTodos).concat(lowPriorityTodos);
+  return filterTodo[0]
+
+}
+
 const getTodayDate = () => {
   const dateObj = new Date()
   let date = dateObj.getDate().toString();
@@ -49,4 +58,4 @@ const getTodayDate = () => {
   return `${year}-${month}-${date}`
 }
 
-export const initialNewTodo = { status: "Todo", priority: "High", description: "", datetime: getTodayDate() } as Todo;
+export const initialTodo = { status: "Todo", priority: "High", description: "", datetime: getTodayDate() } as Todo;

@@ -5,7 +5,9 @@ import { colorByPriority } from "../theme"
 import {RiPencilFill} from "react-icons/ri"
 import {RiDeleteBin5Fill} from "react-icons/ri"
 import {RiArrowRightLine} from "react-icons/ri"
-import { useContext, useState } from "react"
+import {RiArrowLeftLine} from "react-icons/ri"
+
+import { useContext } from "react"
 import { todoContext } from "../screens/todos/todoPage.component"
 import { getDateStringToDisplay, nextStateMapByPrevState } from "../utils/todoUtils"
 
@@ -16,7 +18,8 @@ interface TodoItemProps {
 }
 
 export const TodoItem = ({todo}: TodoItemProps) => {
-    const {deleteTodo, editTodo, moveTodoTo} = useContext(todoContext);
+    const {deleteTodo, handleClickOnEditIcon, moveTodoTo} = useContext(todoContext);
+
     return <div className={css(commonCss.row, commonCss.justifySpaceBetween ,styles.todoItem, borderColor(colorByPriority[todo.priority]))}>
         {todo.status!=="Done"
             ? <div className={css(styles.todoDescription)}>{todo.description}</div>
@@ -24,12 +27,16 @@ export const TodoItem = ({todo}: TodoItemProps) => {
         }
         <div className={css(commonCss.row)}>
             <div className={css(styles.todoActionIcon, styles.dateTime)}>{getDateStringToDisplay(todo.datetime)}</div>
+            {todo.status==="In Progress"
+                ? <div className={css(styles.todoActionIcon)} onClick={()=> moveTodoTo(todo.id, "Todo")}><RiArrowLeftLine/></div>
+                : null
+            }
             {todo.status!=="Done"
                 ? <div className={css(styles.todoActionIcon)} onClick={()=> moveTodoTo(todo.id, nextStateMapByPrevState[todo.status])}><RiArrowRightLine/></div>
                 : null
             }
             {todo.status!=="Done"
-                ? <div className={css(styles.todoActionIcon)} onClick={()=> editTodo(todo.id)}><RiPencilFill/></div>
+                ? <div className={css(styles.todoActionIcon)} onClick={()=> handleClickOnEditIcon(todo.id)}><RiPencilFill/></div>
                 : null
             }
             <div className={css(styles.todoActionIcon)} onClick={()=>deleteTodo(todo.id)}><RiDeleteBin5Fill/></div>

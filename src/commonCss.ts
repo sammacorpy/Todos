@@ -94,6 +94,12 @@ export const borderColor = (val: string) =>
       borderColor: val,
     },
   })._;
+export const color = (val: string) =>
+  StyleSheet.create({
+    _: {
+      color: val,
+    },
+  })._;
 export const flex = (val: string) =>
   StyleSheet.create({
     _: {
