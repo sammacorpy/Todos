@@ -1,4 +1,4 @@
-import { Todo } from "../interface/todo";
+import { Todo, TodoMap } from "../interface/todo";
 
 export const getDateStringToDisplay = (datetime: string) => {
   const dateObj = new Date(datetime);
@@ -22,28 +22,28 @@ export const getDateStringToDisplay = (datetime: string) => {
 };
 
 export const nextStateMapByPrevState = {
-  Todo: "In Progress",
-  "In Progress": "Done",
+  Todo: "In-Progress",
+  "In-Progress": "Done",
 } as any;
 
 
-export const filterTodosByStatus = (todos: Todo[]): { [key: string]: Todo[] } => {
-  const todosByStatus = {} as { [key: string]: Todo[] };
-  todos.forEach((todo) => {
-    todo.status in todosByStatus
-      ? todosByStatus[todo.status].push(todo)
-      : (todosByStatus[todo.status] = [todo]);
+export const getTodoIDsByStatusMap = (todoMap: TodoMap): { [key: string]: Todo['id'][] } => {
+  const todoIDsByStatus = {} as { [key: string]: Todo['id'][] };
+  Object.keys(todoMap).forEach((todoID) => {
+    const todo = todoMap[todoID];
+    todo.status in todoIDsByStatus
+      ? todoIDsByStatus[todo.status].push(todo.id)
+      : (todoIDsByStatus[todo.status] = [todo.id]);
   });
-  return todosByStatus;
+  return todoIDsByStatus;
 };
 
-export const filterMostPrioritizedTodo = (todos: Todo[]): Todo => {
-  const highestPriorityTodos = todos.filter(todo => todo.priority === "High" && todo.status==="Todo");
-  const mediumPriorityTodos = todos.filter(todo => todo.priority === "Medium" && todo.status==="Todo");
-  const lowPriorityTodos = todos.filter(todo => todo.priority === "Low" && todo.status==="Todo");
+export const filterMostPrioritizedTodoIDs = (todoMap: TodoMap): Todo['id'] => {
+  const highestPriorityTodos = Object.keys(todoMap).filter(todoID => todoMap[todoID].priority === "High" && todoMap[todoID].status==="Todo");
+  const mediumPriorityTodos = Object.keys(todoMap).filter(todoID => todoMap[todoID].priority === "Medium" && todoMap[todoID].status==="Todo");
+  const lowPriorityTodos = Object.keys(todoMap).filter(todoID => todoMap[todoID].priority === "Low" && todoMap[todoID].status==="Todo");
   const filterTodo = highestPriorityTodos.concat(mediumPriorityTodos).concat(lowPriorityTodos);
   return filterTodo[0]
-
 }
 
 const getTodayDate = () => {

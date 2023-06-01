@@ -17,10 +17,11 @@ export const todoContext = createContext({} as any);
 
 const TodoPage = () => {
   const {
-    todosByStatus,
+    todoIDsByStatusMap,
+    todoMap,
     inputRef,
     newTodo,
-    mostPrioritizedTodo,
+    mostPrioritizedTodoID,
     setNewTodo,
     addOrEditTodo,
     moveTodoTo,
@@ -28,7 +29,8 @@ const TodoPage = () => {
     deleteTodo,
     handleOnDragEnd
   } = useTodo(initialTodo);
-
+  
+  const mostPrioritizedTodo = mostPrioritizedTodoID ? todoMap[mostPrioritizedTodoID] : undefined ;
   return (
     <React.Fragment>
       <Navbar/>
@@ -40,8 +42,8 @@ const TodoPage = () => {
             <span className={css(styles.todoSectionHeader)}>
               <RiTodoLine /> You should focus on
             </span>
-            <div className={css(styles.todoSectionSubHeader, color(colorByPriority[mostPrioritizedTodo?.priority]))}>
-              <FaCircle /> {mostPrioritizedTodo?.description || "No Task"}
+            <div className={css(styles.todoSectionSubHeader, color(colorByPriority[mostPrioritizedTodo?.priority || ""]))}>
+              <FaCircle /> {mostPrioritizedTodo?.description|| "No Task"}
             </div>
           </header>
           <div className={css(styles.todoSectionBody)}>
@@ -63,15 +65,15 @@ const TodoPage = () => {
               >
                 <TodosContainer
                   columnName="Todo"
-                  todos={todosByStatus["Todo"] || []}
+                  todoIDs={todoIDsByStatusMap["Todo"] || []}
                 />
                 <TodosContainer
-                  columnName="In progress"
-                  todos={todosByStatus["In Progress"] || []}
+                  columnName="In-Progress"
+                  todoIDs={todoIDsByStatusMap["In-Progress"] || []}
                 />
                 <TodosContainer
                   columnName="Done"
-                  todos={todosByStatus["Done"] || []}
+                  todoIDs={todoIDsByStatusMap["Done"] || []}
                 />
               </div>
             </DragDropContext>

@@ -4,75 +4,73 @@ import { Auth } from "../interface/auth";
 import { Todo } from "../interface/todo";
 import todosRepository from "../repositories/todos.repository";
 import {
-  filterMostPrioritizedTodo,
-  filterTodosByStatus,
+  filterMostPrioritizedTodoIDs,
+  getTodoIDsByStatusMap,
 } from "../utils/todoUtils";
 import { DropResult } from "react-beautiful-dnd";
 
-const reorderTodos = (
-  todos: Todo[],
+const reorderTodoIDs = (
+  todoIDs: string[],
   sourceIndex: number,
   destinationIndex: number
-): Todo[] => {
-  const reorderTodos = Array.from(todos);
-  const [removedTodo] = reorderTodos.splice(sourceIndex, 1);
-  reorderTodos.splice(destinationIndex, 0, removedTodo);
-  return reorderTodos;
+): string[] => {
+  const reorderedTodoIDs = Array.from(todoIDs || []);
+  const [removedTodoID] = reorderedTodoIDs.splice(sourceIndex, 1);
+  reorderedTodoIDs.splice(destinationIndex, 0, removedTodoID);
+  return reorderedTodoIDs;
 };
 
 export const useTodo = (initialTodo: Todo) => {
   const inputRef = useRef<HTMLElement>();
   const { auth }: { auth: Auth } = useContext(authContext);
-  const [todos, setTodos] = useState([] as Todo[]);
-  const [todosByStatus, setTodosByStatus] = useState({} as any);
+  const [todoIDsByStatusMap, setTodoIDsByStatusMap] = useState({} as any);
   const [newTodo, setNewTodo] = useState(initialTodo as Todo);
-  const [mostPrioritizedTodo, setMostPrioritizedTodo] = useState({} as Todo);
+  const [mostPrioritizedTodoID, setMostPrioritizedTodoID] = useState( "" as Todo['id']);
 
   useEffect(() => {
-    console.log("for each user runs time");
     todosRepository
       .getTodos(auth?.user?.id)
-      .then((_todos) => setTodos(_todos || []));
+      .then((_todoMap) => {
+        setTodoIDsByStatusMap(getTodoIDsByStatusMap(_todoMap));
+        setMostPrioritizedTodoID(filterMostPrioritizedTodoIDs(_todoMap));
+      });
   }, [auth]);
-  useEffect(() => {
-    setTodosByStatus(filterTodosByStatus(todos));
-    setMostPrioritizedTodo(filterMostPrioritizedTodo(todos));
-  }, [todos]);
+  useEffect(()=> {
+    setMostPrioritizedTodoID(filterMostPrioritizedTodoIDs(todosRepository.todoMap));
+  }, [todoIDsByStatusMap])
   const addOrEditTodo = (todo: Todo) => {
     if (todo.id) {
       todosRepository
         .editTodo(todo.id, todo)
-        .then(() =>
-          setTodos(todos.map((_todo) => (_todo.id === todo.id ? todo : _todo)))
-        )
         .then(() => setNewTodo(initialTodo as Todo));
     } else
       todosRepository
         .addTodo(auth, todo)
-        .then((id) => setTodos([...todos, { ...todo, id }]))
+        .then((id) => {
+            const newTodoIDs = Array.from(todoIDsByStatusMap[todo.status] || []);
+            newTodoIDs.push(id);
+            setTodoIDsByStatusMap(Object.assign({}, todoIDsByStatusMap, {[todo.status]: newTodoIDs}))
+        })
         .then(() => setNewTodo(initialTodo as Todo));
   };
   const moveTodoTo = (todoID: string, status: string) => {
     todosRepository
       .editTodo(todoID, { status })
-      .then(() =>
-        setTodos(
-          todos.map((todo) =>
-            todo?.id === todoID ? { ...todo, status } : todo
-          )
-        )
-      );
+      .then(() => setTodoIDsByStatusMap(getTodoIDsByStatusMap(todosRepository.todoMap)));
   };
   const deleteTodo = (todoID: string) => {
+    const todoDeleted = todosRepository.todoMap[todoID];
     todosRepository
       .deleteTodo(todoID)
-      .then(() => setTodos(todos.filter((todo) => todo?.id !== todoID)));
+      .then(() => {
+        setTodoIDsByStatusMap(Object.assign({}, todoIDsByStatusMap, {[todoDeleted.status]: todoIDsByStatusMap[todoDeleted.status].filter((deleteTodoID:string) => deleteTodoID!==todoID)}))
+      });
   };
   const handleClickOnEditIcon = (todoID: string) => {
     // get todo item to be edited
-    const todo = todos.filter((todo) => todo.id === todoID);
+    const todo = todosRepository.todoMap[todoID];
     // load the values to display selected Todo Item in Input Bar
-    setNewTodo(todo[0]);
+    setNewTodo(todo);
     // set the input box focused
     inputRef.current?.focus();
   };
@@ -87,21 +85,27 @@ export const useTodo = (initialTodo: Todo) => {
       return;
 
     if (source.droppableId === destination.droppableId) {
-      const sourceContainerTodos = todosByStatus[source.droppableId];
-      const reorderedTodos = reorderTodos(
-        sourceContainerTodos,
+      const sourceContainerTodoIDs = todoIDsByStatusMap[`${source.droppableId}`];
+      console.log("importtant", sourceContainerTodoIDs, todoIDsByStatusMap, source.droppableId)
+      const reorderedTodoIDs = reorderTodoIDs(
+        sourceContainerTodoIDs,
         source.index,
         destination.index
       );
-      setTodos(reorderedTodos);
+      const reorderedTodoIDsByStatus = {
+        [source.droppableId]: reorderedTodoIDs
+      }
+      console.log(Object.assign(todoIDsByStatusMap, reorderedTodoIDsByStatus))
+      setTodoIDsByStatusMap(Object.assign({}, todoIDsByStatusMap, reorderedTodoIDsByStatus));
     }
   };
 
   return {
-    todosByStatus,
+    todoMap: todosRepository.todoMap,
+    todoIDsByStatusMap,
     inputRef,
     newTodo,
-    mostPrioritizedTodo,
+    mostPrioritizedTodoID,
     setNewTodo,
     handleOnDragEnd,
     addOrEditTodo,

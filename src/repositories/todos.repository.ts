@@ -1,12 +1,10 @@
 import { Todos, db } from "../db"
-import { Todo } from "../interface/todo";
+import { Todo, TodoMap } from "../interface/todo";
 import { Auth } from "../interface/auth";
 
-interface TodoMap {
-    [key:string]: Todo
-}
 
 const todos = ()=> ({
+    todoMap: {} as TodoMap,
     parseTodo(value: Todos): Todo {
         return {
             id: value.id || "",
@@ -17,26 +15,30 @@ const todos = ()=> ({
         }
     },
     async getTodos(userID: string): Promise<TodoMap> {
-        const todoMap = {} as TodoMap;
         (await db.todos.where({userid: userID}).toArray()).forEach(todo=> {
-            todoMap[todo.id || ""] =  this.parseTodo(todo);
+            this.todoMap[todo.id || ""] =  this.parseTodo(todo);
         });
-        return todoMap;
+        return Object.assign(this.todoMap);
     },
     async addTodo(auth:Auth, todo: any): Promise<any| undefined> {
         if (auth.isAuthenticated)
         {
-            const _todo:Todos = Object.assign({}, todo, {
+            const _todo:Todos = Object.assign(todo, {
                 id: Date.now().toString(),
                 userid: auth?.user.id
             });
-            return await db.todos.add(_todo);
+            return await db.todos.add(_todo).then(ID => {
+                this.todoMap[ID.toString()]= _todo;
+                return ID;
+            });
         }
     },
     async deleteTodo(ID: string): Promise<void> {
+        delete this.todoMap[ID];
         await db.todos.delete(ID);
     },
     async editTodo(ID:string, updatedTodo: Partial<Todo>): Promise<number> {
+        this.todoMap[ID] = Object.assign(this.todoMap[ID], updatedTodo);
         return db.todos.update(ID, updatedTodo)
     }
 

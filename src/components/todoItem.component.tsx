@@ -15,7 +15,7 @@ import { getDateStringToDisplay, nextStateMapByPrevState } from "../utils/todoUt
 
 interface TodoItemProps {
     todo: Todo,
-    innerRef: any
+    innerRef?: any
 }
 
 export const TodoItem = ({todo, innerRef, ...props}: TodoItemProps) => {
@@ -28,7 +28,7 @@ export const TodoItem = ({todo, innerRef, ...props}: TodoItemProps) => {
         }
         <div className={css(commonCss.row)}>
             <div className={css(styles.todoActionIcon, styles.dateTime)}>{getDateStringToDisplay(todo.datetime)}</div>
-            {todo.status==="In Progress"
+            {todo.status==="In-Progress"
                 ? <div className={css(styles.todoActionIcon)} onClick={()=> moveTodoTo(todo.id, "Todo")}><RiArrowLeftLine/></div>
                 : null
             }

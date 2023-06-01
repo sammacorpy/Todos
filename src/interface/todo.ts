@@ -5,3 +5,7 @@ export interface Todo {
     datetime: string;
     status: string;
 }
+
+export interface TodoMap {
+    [key:string]: Todo
+}
