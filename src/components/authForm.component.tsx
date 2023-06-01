@@ -1,6 +1,6 @@
 import { StyleSheet, css } from "aphrodite";
 import React from "react";
-import commonCss, { flexColumnAllCenter } from "../commonCss";
+import commonCss, { flexColumnAllCenter, margin } from "../commonCss";
 import { isMobileView } from "../theme";
 import { ButtonMedium } from "./button.component";
 import { Input } from "./input.component";
@@ -12,13 +12,13 @@ interface Entity {
   option: RegisterOptions;
 }
 
-interface AuthFormI {
+interface AuthFormProps {
   entities: Entity[];
   onFormSubmit: (val: any) => void;
   actionText: string;
 }
 
-export const AuthForm = ({ entities, onFormSubmit, actionText }: AuthFormI) => {
+export const AuthForm = ({ entities, onFormSubmit, actionText }: AuthFormProps) => {
   const {
     register,
     handleSubmit,
@@ -34,6 +34,7 @@ export const AuthForm = ({ entities, onFormSubmit, actionText }: AuthFormI) => {
           return (
             <React.Fragment key={entity.name}>
               <Input
+                className={css(margin("0 0 20px 0"))}
                 type={entity.type}
                 placeholder={`Enter ${entity.name}`}
                 formProps={register(entity.name, entity.option)}

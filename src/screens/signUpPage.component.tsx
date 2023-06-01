@@ -1,4 +1,4 @@
-import signupSVGBackground from "../svgs/todoSignupPage.svg";
+import signupSVGBackground from "../assets/todoSignupPage.svg";
 import { css } from "aphrodite";
 import commonCss, {
   flexColumnAllCenter,
@@ -9,7 +9,11 @@ import { isMobileView } from "../theme";
 import { SVGIllustration } from "../components/svgIllustration.component";
 import { AuthForm } from "../components/authForm.component";
 import { AuthHeader } from "../components/authHeader.component";
-const SignupPage = () => {
+import { useSignUp } from "../hooks/useAuth";
+
+const SignUpPage = () => {
+    const {errorMsg, signUp} = useSignUp();
+  
   return (
     <div className={css(flexRowAllCenter, commonCss.rootElem, padding("10px"))}>
       <SVGIllustration
@@ -22,10 +26,10 @@ const SignupPage = () => {
           padding("0 0.8rem")
         )}
       >
-        <AuthHeader signup></AuthHeader>
+        <AuthHeader signup errorMsg={errorMsg}></AuthHeader>
         <AuthForm
           entities={[
-            { name: "name", option: { required: "* name required"}},
+            { name: "name", option: { required: "* name required" } },
             { name: "username", option: { required: "* username required" } },
             {
               name: "password",
@@ -38,10 +42,12 @@ const SignupPage = () => {
                 },
               },
             },
-            { name: "confirm password", option: { required: "* confirm password required"}},
-
+            {
+              name: "confirm password",
+              option: { required: "* confirm password required" },
+            },
           ]}
-          onFormSubmit={(val) => console.log(val)}
+          onFormSubmit={(form) => signUp(form)}
           actionText="Sign Up"
         />
       </div>
@@ -49,4 +55,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default SignUpPage;

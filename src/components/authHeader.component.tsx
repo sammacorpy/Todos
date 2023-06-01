@@ -3,17 +3,19 @@ import React from "react"
 import { Link } from "react-router-dom"
 import commonCss from "../commonCss"
 import { primaryColor } from "../theme";
+import { TodoLogo } from "./todoLogo.component";
 
 
-interface AuthHeaderI {
+interface AuthHeaderProps {
     login?: boolean;
     signup?: boolean;
+    errorMsg?: string;
 }
 
-export const AuthHeader = ({login, signup }: AuthHeaderI) => {
+export const AuthHeader = ({login, signup, errorMsg }: AuthHeaderProps) => {
     const loginOrSignUp = (login && "Login") || "Sign Up" 
     return <React.Fragment>
-        <h2 className={css(styles.primaryColor)}>[TODO LIST...]</h2>
+        <TodoLogo size="10rem" ></TodoLogo>
         <div className={css(styles.textHeader)}>{loginOrSignUp}</div>
         <div className={css(styles.textSubHeader)}>
           Please {loginOrSignUp} to Continue
@@ -26,6 +28,9 @@ export const AuthHeader = ({login, signup }: AuthHeaderI) => {
           >
             {(signup && "Login") || "Sign Up"}
           </Link>
+        </div>
+        <div className={css(styles.textSubHeader, styles.red)}>
+            {errorMsg}
         </div>
 
     </React.Fragment>
@@ -56,4 +61,7 @@ const styles = StyleSheet.create({
       marginBottom: "10px",
       alignSelf: "flex-start",
     },
+    red: {
+        color: "#f00"
+    }
   });

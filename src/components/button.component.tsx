@@ -3,14 +3,14 @@ import { primaryColor, shadowColor } from "../theme";
 import React from "react";
 import { backgroundColor } from "../commonCss";
 
-interface ButtonI extends React.HTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   type?: string;
   text: string;
   color?: string;
 }
 
 export const ButtonMedium = React.memo(
-  ({ text, onClick, color, className }: ButtonI) => {
+  ({ text, onClick, color, className }: ButtonProps) => {
     return (
       <button
         onClick={onClick}

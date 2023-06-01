@@ -16,6 +16,12 @@ const commonCss = StyleSheet.create({
   justifyCenter: {
     justifyContent: "center",
   },
+  justifySpaceBetween: {
+    justifyContent: "space-between",
+  },
+  justifySpaceAround: {
+    justifyContent: "space-around",
+  },
   alignCenter: {
     alignItems: "center",
   },
@@ -80,5 +86,17 @@ export const backgroundColor = (val: string) =>
   StyleSheet.create({
     _: {
       background: val,
+    },
+  })._;
+export const borderColor = (val: string) =>
+  StyleSheet.create({
+    _: {
+      borderColor: val,
+    },
+  })._;
+export const flex = (val: string) =>
+  StyleSheet.create({
+    _: {
+      flex: `${val}`,
     },
   })._;

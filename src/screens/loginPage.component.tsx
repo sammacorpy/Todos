@@ -1,4 +1,4 @@
-import loginSVGBackground from "../svgs/todoLoginPage.svg";
+import loginSVGBackground from "../assets/todoLoginPage.svg";
 import { css } from "aphrodite";
 import commonCss, {
   flexColumnAllCenter,
@@ -9,7 +9,22 @@ import { isMobileView } from "../theme";
 import { SVGIllustration } from "../components/svgIllustration.component";
 import { AuthForm } from "../components/authForm.component";
 import { AuthHeader } from "../components/authHeader.component";
-const LoginPage = () => {
+import { useEffect } from "react";
+import { Auth } from "../interface/auth";
+import { useNavigate } from "react-router-dom";
+
+interface LoginPageProps {
+    signIn: (val:any) => void;
+    errorMsg: string;
+    auth: Auth
+}
+
+const LoginPage = ({auth, signIn, errorMsg}: LoginPageProps) => {
+    const navigate = useNavigate();
+    useEffect(()=> {
+        if (auth?.isAuthenticated)
+            navigate("/")
+    })
   return (
     <div className={css(flexRowAllCenter, commonCss.rootElem, padding("10px"))}>
       <SVGIllustration
@@ -22,7 +37,7 @@ const LoginPage = () => {
           padding("0 0.8rem")
         )}
       >
-        <AuthHeader login></AuthHeader>
+        <AuthHeader login errorMsg={errorMsg}></AuthHeader>
         <AuthForm
           entities={[
             { name: "username", option: { required: "* username required" } },
@@ -38,7 +53,7 @@ const LoginPage = () => {
               },
             },
           ]}
-          onFormSubmit={(val) => console.log(val)}
+          onFormSubmit={(form) => signIn(form)}
           actionText="Login"
         />
       </div>
