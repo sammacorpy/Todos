@@ -1,14 +1,10 @@
 import React, {
   createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
 } from "react";
 import { Navbar } from "../../components/navbar.component";
 import { StyleSheet, css } from "aphrodite";
 import commonCss, { color, margin } from "../../commonCss";
-import { colorByPriority, isMobileView, priorityOneColor, softBlack } from "../../theme";
+import { colorByPriority, isMobileView, softBlack } from "../../theme";
 import { RiTodoLine } from "react-icons/ri";
 import { FaCircle } from "react-icons/fa";
 import { TodosContainer } from "../../components/todosContainer.component";
