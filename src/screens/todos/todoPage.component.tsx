@@ -11,8 +11,9 @@ import { TodosContainer } from "../../components/todosContainer.component";
 import { initialTodo } from "../../utils/todoUtils";
 import { TodoInputBar } from "../../components/todoInputBar.component";
 import { useTodo } from "../../hooks/useTodo";
-
+import { DragDropContext} from "react-beautiful-dnd";
 export const todoContext = createContext({} as any);
+
 
 const TodoPage = () => {
   const {
@@ -25,10 +26,12 @@ const TodoPage = () => {
     moveTodoTo,
     handleClickOnEditIcon,
     deleteTodo,
+    handleOnDragEnd
   } = useTodo(initialTodo);
+
   return (
     <React.Fragment>
-      <Navbar></Navbar>
+      <Navbar/>
       <todoContext.Provider
         value={{ moveTodoTo, deleteTodo, handleClickOnEditIcon }}
       >
@@ -38,7 +41,7 @@ const TodoPage = () => {
               <RiTodoLine /> You should focus on
             </span>
             <div className={css(styles.todoSectionSubHeader, color(colorByPriority[mostPrioritizedTodo?.priority]))}>
-              <FaCircle /> {mostPrioritizedTodo?.description}
+              <FaCircle /> {mostPrioritizedTodo?.description || "No Task"}
             </div>
           </header>
           <div className={css(styles.todoSectionBody)}>
@@ -50,26 +53,28 @@ const TodoPage = () => {
               }}
               onChange={(val: any) => setNewTodo(val)}
             ></TodoInputBar>
-            <div
-              className={css(
-                isMobileView ? commonCss.column : commonCss.row,
-                commonCss.justifySpaceAround,
-                margin("40px 0px")
-              )}
-            >
-              <TodosContainer
-                columnName="Todo"
-                todos={todosByStatus["Todo"] || []}
-              />
-              <TodosContainer
-                columnName="In progress"
-                todos={todosByStatus["In Progress"] || []}
-              />
-              <TodosContainer
-                columnName="Done"
-                todos={todosByStatus["Done"] || []}
-              />
-            </div>
+            <DragDropContext onDragEnd={handleOnDragEnd} onDragStart={()=> {}}>
+              <div
+                className={css(
+                  isMobileView ? commonCss.column : commonCss.row,
+                  commonCss.justifySpaceAround,
+                  margin("40px 0px")
+                )}
+              >
+                <TodosContainer
+                  columnName="Todo"
+                  todos={todosByStatus["Todo"] || []}
+                />
+                <TodosContainer
+                  columnName="In progress"
+                  todos={todosByStatus["In Progress"] || []}
+                />
+                <TodosContainer
+                  columnName="Done"
+                  todos={todosByStatus["Done"] || []}
+                />
+              </div>
+            </DragDropContext>
           </div>
         </section>
       </todoContext.Provider>

@@ -14,13 +14,14 @@ import { getDateStringToDisplay, nextStateMapByPrevState } from "../utils/todoUt
 
 
 interface TodoItemProps {
-    todo: Todo
+    todo: Todo,
+    innerRef: any
 }
 
-export const TodoItem = ({todo}: TodoItemProps) => {
+export const TodoItem = ({todo, innerRef, ...props}: TodoItemProps) => {
     const {deleteTodo, handleClickOnEditIcon, moveTodoTo} = useContext(todoContext);
 
-    return <div className={css(commonCss.row, commonCss.justifySpaceBetween ,styles.todoItem, borderColor(colorByPriority[todo.priority]))}>
+    return <div ref={innerRef} className={css(commonCss.row, commonCss.justifySpaceBetween ,styles.todoItem, borderColor(colorByPriority[todo.priority]))} {...props}>
         {todo.status!=="Done"
             ? <div className={css(styles.todoDescription)}>{todo.description}</div>
             : <div className={css(styles.strikeThrough, styles.todoDescription)}>{todo.description}</div>

@@ -1,17 +1,18 @@
+
 import { db } from "../db"
-import bcrypt from 'bcryptjs'
 import { User } from "../interface/user";
-const salt = "$2a$10$RulEdthi.CTOBpV1kkGqCO"
+
 const Users = () => ({
     async signup(name: string, username: string, password: string) {
-        const hashedPassword = bcrypt.hashSync(password, salt);
+        // encoding it using base64 for time being
+        const hashedPassword = btoa(password);
         return await db.users.add({id: Date.now().toString(), name, username, password: hashedPassword})
     },
     async isUsernameUnique(username: string) {
         return (await db.users.where("username").equals(username).count()) === 0;
     },
     async signIn(username: string, password: string) {
-        const hashedPassword = bcrypt.hashSync(password, salt);
+        const hashedPassword = btoa(password);
         const user = await db.users.get({username: username, password: hashedPassword});
         localStorage.setItem("signedInUserID", user?.id || "");
         return user;

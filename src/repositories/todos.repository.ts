@@ -2,6 +2,9 @@ import { Todos, db } from "../db"
 import { Todo } from "../interface/todo";
 import { Auth } from "../interface/auth";
 
+interface TodoMap {
+    [key:string]: Todo
+}
 
 const todos = ()=> ({
     parseTodo(value: Todos): Todo {
@@ -13,17 +16,20 @@ const todos = ()=> ({
             datetime: value.datetime
         }
     },
-    async getTodos(userID: string): Promise<Todo[]> {
-        return (await db.todos.where({userid: userID}).toArray()).map(todo=> this.parseTodo(todo));
+    async getTodos(userID: string): Promise<TodoMap> {
+        const todoMap = {} as TodoMap;
+        (await db.todos.where({userid: userID}).toArray()).forEach(todo=> {
+            todoMap[todo.id || ""] =  this.parseTodo(todo);
+        });
+        return todoMap;
     },
     async addTodo(auth:Auth, todo: any): Promise<any| undefined> {
         if (auth.isAuthenticated)
         {
-            const _todo:Todos = {
-                ...todo,
+            const _todo:Todos = Object.assign({}, todo, {
                 id: Date.now().toString(),
                 userid: auth?.user.id
-            }
+            });
             return await db.todos.add(_todo);
         }
     },
