@@ -7,6 +7,7 @@ interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
   type?: string;
   onChangeValue?: (val: string) => void;
   formProps?: any;
+  inputRef?: React.MutableRefObject<HTMLElement | undefined>;
 }
 
 export const Input = React.memo(
@@ -18,9 +19,11 @@ export const Input = React.memo(
     autoFocus,
     onChangeValue,
     formProps,
+    inputRef
   }: InputProps) => {
     return (
       <input
+        ref = {inputRef}
         type={type}
         onChange={(e) => onChangeValue && onChangeValue(e.target.value)}
         autoFocus={autoFocus}

@@ -17,7 +17,6 @@ interface TodoItemProps {
 
 export const TodoItem = ({todo}: TodoItemProps) => {
     const {deleteTodo, editTodo, moveTodoTo} = useContext(todoContext);
-    const [isEditMode, setEditMode] = useState(false);    
     return <div className={css(commonCss.row, commonCss.justifySpaceBetween ,styles.todoItem, borderColor(colorByPriority[todo.priority]))}>
         {todo.status!=="Done"
             ? <div className={css(styles.todoDescription)}>{todo.description}</div>

@@ -8,14 +8,11 @@ import React, {
 import { Navbar } from "../../components/navbar.component";
 import { StyleSheet, css } from "aphrodite";
 import commonCss, {
-  flex,
-  flexRowAllCenter,
   margin,
 } from "../../commonCss";
 import {
   isMobileView,
   priorityOneColor,
-  shadowColor,
   softBlack,
 } from "../../theme";
 import { RiTodoLine } from "react-icons/ri";
@@ -32,12 +29,11 @@ export const todoContext = createContext({} as any);
 
 
 const TodoPage = () => {
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLElement>();
   const { auth }: { auth: Auth } = useContext(authContext);
   const [todos, setTodos] = useState([] as Todo[]);
   const [todosByStatus, setTodosByStatus] = useState({} as any);
   const [newTodo, setNewTodo] = useState(initialNewTodo as Todo);
-  const [editTodoID, setEditTodoID] = useState(initialNewTodo.id as Todo['id']);
 
   useEffect(() => {
     todosRepository
@@ -47,11 +43,17 @@ const TodoPage = () => {
   useEffect(() => {
     setTodosByStatus(filterTodosByStatus(todos));
   }, [todos]);
-  const addTodo = (todo: Todo) => {
-    todosRepository
-      .addTodo(auth, todo)
-      .then(() => setTodos([...todos,  todo ]))
-      .then(() => (setNewTodo(initialNewTodo as Todo)));
+  const addOrEditTodo = (todo: Todo) => {
+    if(todo.id) {
+      todosRepository
+        .editTodo(todo.id, todo)
+        .then(() => setTodos(todos.map(_todo => _todo.id === todo.id ? todo : _todo)))
+        .then(() => (setNewTodo(initialNewTodo as Todo)));
+    } else
+      todosRepository
+        .addTodo(auth, todo)
+        .then(() => setTodos([...todos,  todo ]))
+        .then(() => (setNewTodo(initialNewTodo as Todo)));
   };
   const moveTodoTo = (todoID: string, status: string) => {
     todosRepository
@@ -70,10 +72,12 @@ const TodoPage = () => {
       .then(() => setTodos(todos.filter((todo) => todo?.id !== todoID)));
   };
   const editTodo = (todoID: string) => {
-    setEditTodoID(todoID);
+    // get todo item to be edited
     const todo = todos.filter(todo=>todo.id===todoID);
-    setNewTodo(todo[0])
-
+    // load the values to display selected Todo Item in Input Bar
+    setNewTodo(todo[0]);
+    // set the input box focused
+    inputRef.current?.focus()
   };
   return (
     <React.Fragment>
@@ -89,7 +93,7 @@ const TodoPage = () => {
             </div>
           </header>
           <div className={css(styles.todoSectionBody)}>
-            <TodoInputBar inputRef={inputRef} inputValue={newTodo} onSubmit={()=>{addTodo(newTodo)}} onChange={(val: any)=>setNewTodo(val)}></TodoInputBar>
+            <TodoInputBar inputRef={inputRef} inputValue={newTodo} onSubmit={()=>{addOrEditTodo(newTodo)}} onChange={(val: any)=>setNewTodo(val)}></TodoInputBar>
             <div
               className={css(
                 isMobileView ? commonCss.column : commonCss.row,

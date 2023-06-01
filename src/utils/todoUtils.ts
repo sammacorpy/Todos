@@ -4,18 +4,18 @@ export const getDateStringToDisplay = (datetime: string) => {
   const dateObj = new Date(datetime);
   const date = dateObj.getDate();
   const monthNameByIndex = {
-    "1": "Jan",
-    "2": "Feb",
-    "3": "Mar",
-    "4": "Apr",
-    "5": "May",
-    "6": "Jun",
-    "7": "Jul",
-    "8": "Aug",
-    "9": "Sep",
-    "10": "Oct",
-    "11": "Nov",
-    "12": "Dec",
+    "0": "Jan",
+    "1": "Feb",
+    "2": "Mar",
+    "3": "Apr",
+    "4": "May",
+    "5": "Jun",
+    "6": "Jul",
+    "7": "Aug",
+    "8": "Sep",
+    "9": "Oct",
+    "10": "Nov",
+    "11": "Dec",
   } as any;
   const month = dateObj.getMonth().toString();
   return `${date} ${monthNameByIndex[month]}`;
@@ -37,4 +37,16 @@ export const filterTodosByStatus = (todos: Todo[]): { [key: string]: Todo[] } =>
   return todosByStatus;
 };
 
-export const initialNewTodo = { status: "Todo", priority: "High", description: "", datetime: "" } as Todo;
+const getTodayDate = () => {
+  const dateObj = new Date()
+  let date = dateObj.getDate().toString();
+  let month = dateObj.getMonth().toString();
+  if (parseInt(month)<10)
+    month = "0"+month;
+  if (parseInt(date)<10)
+    date = "0"+date;
+  const year = dateObj.getFullYear();
+  return `${year}-${month}-${date}`
+}
+
+export const initialNewTodo = { status: "Todo", priority: "High", description: "", datetime: getTodayDate() } as Todo;

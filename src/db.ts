@@ -1,4 +1,3 @@
-// db.ts
 import Dexie, { Table } from 'dexie';
 
 export interface Users {
@@ -22,7 +21,7 @@ export class Database extends Dexie {
 
 
   constructor() {
-    super('myDatabase');
+    super('todolistDB');
     this.version(2).stores({
       users: 'id, name, username, password',
       todos: 'id, description, priority, status, datetime, userid'

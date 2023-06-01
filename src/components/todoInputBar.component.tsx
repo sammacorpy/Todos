@@ -1,6 +1,6 @@
 import { StyleSheet, css } from "aphrodite";
 import commonCss, { flexRowAllCenter, flex } from "../commonCss";
-import { isMobileView, shadowColor } from "../theme";
+import { invertColor, isMobileView, shadowColor } from "../theme";
 import { ButtonMedium } from "./button.component";
 import { Input } from "./input.component";
 import { PriorityRadioGroup } from "./priorityRadioGroup.component";
@@ -11,11 +11,10 @@ interface TodoInputBarProps {
     inputValue: Todo;
     onSubmit: (val:Todo) => void,
     onChange: (val: Todo) => void,
-    inputRef: React.MutableRefObject<null>
+    inputRef: React.MutableRefObject<HTMLElement | undefined>
 }
 
-export const TodoInputBar = ({inputValue, onSubmit, onChange}: TodoInputBarProps) => {
-  console.log("from Todo input Bar", inputValue)
+export const TodoInputBar = ({inputValue, onSubmit, onChange, inputRef}: TodoInputBarProps) => {
   return (
     <>
       <div className={css(...flexRowAllCenter)}>
@@ -39,6 +38,7 @@ export const TodoInputBar = ({inputValue, onSubmit, onChange}: TodoInputBarProps
             placeholder="Enter TODO"
             value={inputValue.description}
             onChangeValue={(description) => onChange({...inputValue, description})}
+            inputRef = {inputRef}
           />
           <Input
             type="date"
@@ -50,7 +50,8 @@ export const TodoInputBar = ({inputValue, onSubmit, onChange}: TodoInputBarProps
           <ButtonMedium
             onClick={() => onSubmit(inputValue)}
             className={css(styles.todoSubmitButton)}
-            text="Add Todo"
+            text={inputValue.id ? "Edit Todo": "Add Todo"}
+            color={inputValue.id && invertColor}
           ></ButtonMedium>
         </div>
       </div>
