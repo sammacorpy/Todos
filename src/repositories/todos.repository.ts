@@ -15,6 +15,7 @@ const todos = ()=> ({
         }
     },
     async getTodos(userID: string): Promise<TodoMap> {
+        this.todoMap = {};
         (await db.todos.where({userid: userID}).toArray()).forEach(todo=> {
             this.todoMap[todo.id || ""] =  this.parseTodo(todo);
         });
